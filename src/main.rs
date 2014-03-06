@@ -4,18 +4,23 @@
 #[crate_id = "gerphius"];
 #[crate_type = "bin"];
 
-extern crate native;
+// our dependencies
 
-extern crate cgmath;
+extern crate native;
+extern crate collections;
+
+extern crate gl;
 extern crate hgl;
-extern crate noise;
 extern crate png;
 extern crate ears;
+extern crate noise;
+extern crate cgmath;
 extern crate glfw = "glfw-rs";
 
 use game::Game;
 
 mod game;
+mod render;
 
 // link to libglfw
 #[link(name="glfw")]
@@ -32,7 +37,8 @@ fn main() {
     glfw::set_error_callback(box glfw::LogErrorHandler);
     // initialize glfw and run
     glfw::start(proc() {
-        glfw::window_hint::resizable(true);
+        // don't want to handle resizing logic
+        glfw::window_hint::resizable(false);
 
         // opengl 3.1
         glfw::window_hint::context_version(3, 1);
@@ -49,15 +55,18 @@ fn main() {
         // use this window's gl context
         window.make_context_current();
 
-        let mut game = Game::new();
+        let mut game = Game::new(400, 300);
 
         while !window.should_close() {
             glfw::poll_events();
+
             for event in window.flush_events() {
                 game.handle_event(&window, event);
             }
+
             game.tick();
             game.render();
+
             window.swap_buffers();
         }
     });

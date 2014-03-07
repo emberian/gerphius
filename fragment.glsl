@@ -1,3 +1,5 @@
+#version 140
+
 in vec2 Texcoord;
 
 out vec4 out_color;

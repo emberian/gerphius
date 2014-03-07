@@ -42,6 +42,7 @@ impl Engine {
         program.bind_frag(0, "out_color");
         program.bind();
 
+        gl::Uniform1i(program.uniform("sprite"), 0);
         gl::Uniform2f(program.uniform("windowsize"), width as GLfloat, height as GLfloat);
 
         let vbo = Vbo::new();

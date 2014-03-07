@@ -11,5 +11,5 @@ void main() {
     if (texel.a < 0.5)
         discard;
 
-    out_color = texel;
+    out_color = vec4(Texcoord, 0, 0.5);
 }

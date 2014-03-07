@@ -183,6 +183,9 @@ impl Tex {
             .width(img.width as GLint).height(img.height as GLint);
 
         let gltex = hgl::Texture::new(hgl::texture::Texture2D, ii, img.pixels.as_slice().as_ptr());
+        gltex.gen_mipmaps();
+        gltex.filter(hgl::texture::NearestMipmapNearest);
+        gltex.wrap(hgl::texture::ClampToBorder);
 
         Tex { texture: gltex }
     }

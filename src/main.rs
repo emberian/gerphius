@@ -40,11 +40,9 @@ fn main() {
         // don't want to handle resizing logic
         glfw::window_hint::resizable(false);
 
-        // opengl 3.1
-        glfw::window_hint::context_version(3, 1);
-
-        // if you bump the gl version, enable the core profile
-        // glfw::window_hint::opengl_profile(glfw::OpenGlCoreProfile);
+        // opengl 3.2 core profile
+        glfw::window_hint::context_version(3, 2);
+        glfw::window_hint::opengl_profile(glfw::OpenGlCoreProfile);
 
         let window = glfw::Window::create(400, 300, "Gerphius", glfw::Windowed)
             .expect("Error: could not open a window!");

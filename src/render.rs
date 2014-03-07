@@ -29,8 +29,13 @@ impl Engine {
     pub fn new(width: GLint, height: GLint) -> Engine {
         gl::load_with(glfw::get_proc_address);
         gl::Viewport(0, 0, width, height);
+        gl::ClearColor(1.0, 1.0, 1.0, 0.0);
+        gl::Enable(gl::BLEND);
+        gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
+
         let vao = Vao::new();
         vao.bind();
+
         let program = Program::link(&[Shader::from_file("vertex.glsl", hgl::program::VertexShader).unwrap().unwrap(),
                                      Shader::from_file("fragment.glsl", hgl::program::FragmentShader).unwrap().unwrap()
                                     ]).unwrap();
@@ -38,6 +43,11 @@ impl Engine {
         program.bind();
 
         gl::Uniform2f(program.uniform("windowsize"), width as GLfloat, height as GLfloat);
+
+        let vbo = Vbo::new();
+        vbo.bind();
+        let ebo = Ebo::new();
+        ebo.bind();
 
         vao.enable_int_attrib(&program, "position", gl::INT, 2, 4*size_of::<GLint>() as i32, 0);
         vao.enable_int_attrib(&program, "texcoord", gl::INT, 2, 4*size_of::<GLint>() as i32, 2 * size_of::<i32>());
@@ -48,8 +58,8 @@ impl Engine {
             width: width,
             height: height,
             vao: vao,
-            vbo: Vbo::new(),
-            ebo: Ebo::new()
+            vbo: vbo,
+            ebo: ebo,
         }
     }
 
@@ -95,11 +105,13 @@ impl Engine {
         let mut indices = ~[];
         let mut base = 0 as GLuint;
 
+        gl::Clear(gl::COLOR_BUFFER_BIT);
+
         for sprite in self.sprites.iter().filter_map(|x| x.as_ref()) {
             let &Sprite { x, y, height, width, .. } = (*sprite).borrow().borrow().get();
 
             // points of the rectangle that makes up this sprite, ccw
-            let sdata = &[
+            let sdata: &[GLint] = &[
                  x, y, 0, 0,
                  x + width, y, 1, 0,
                  x + width, y + height, 1, 1,
@@ -124,10 +136,10 @@ impl Engine {
             tex.texture.activate(0);
 
             // eugh
-            let start = if first { first = false; 0 } else { (idx * 6) - 1 };
+            let start = if first { first = false; 0 } else { (idx * 6) };
 
             debug!("Drawing {} indices starting at {}", 6, start);
-            self.vao.draw_elements(hgl::Triangles, start as GLint, 6);
+            self.vao.draw_elements(hgl::Triangles, start as GLint * 4, 6);
         }
     }
 }
@@ -161,13 +173,12 @@ impl Tex {
         };
 
         let fmt = match img.color_type {
-            png::RGB8 => hgl::texture::pixel::RGB,
-            png::RGBA8 => hgl::texture::pixel::RGBA,
+            png::RGBA8 => { info!("loaded rgba8 png file {}", p); hgl::texture::pixel::RGBA },
             t => fail!("unsupported color type {:?} in png", t),
         };
 
         let ii = hgl::texture::ImageInfo::new()
-            .pixel_format(fmt).pixel_type(hgl::texture::pixel::BYTE)
+            .pixel_format(fmt).pixel_type(hgl::texture::pixel::UNSIGNED_BYTE)
             .width(img.width as GLint).height(img.height as GLint);
 
         let gltex = hgl::Texture::new(hgl::texture::Texture2D, ii, img.pixels.as_slice().as_ptr());

@@ -113,10 +113,10 @@ impl Engine {
 
             // points of the rectangle that makes up this sprite, ccw
             let sdata: &[GLint] = &[
-                 x, y, 0, 0,
-                 x + width, y, 1, 0,
-                 x + width, y + height, 1, 1,
-                 x, y + height, 0, 1
+                 x, y, 0, 1,
+                 x + width, y, 1, 1,
+                 x + width, y + height, 1, 0,
+                 x, y + height, 0, 0
             ];
             data.extend(&mut sdata.iter().map(|&x| x));
 
@@ -185,7 +185,7 @@ impl Tex {
         let gltex = hgl::Texture::new(hgl::texture::Texture2D, ii, img.pixels.as_slice().as_ptr());
         gltex.gen_mipmaps();
         gltex.filter(hgl::texture::NearestMipmapNearest);
-        gltex.wrap(hgl::texture::ClampToBorder);
+        gltex.wrap(hgl::texture::Repeat);
 
         Tex { texture: gltex }
     }

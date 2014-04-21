@@ -14,20 +14,19 @@ use hgl::{Vao, Vbo, Program, Shader, Ebo};
 pub struct Engine {
     // FIXME: implement remove or modify_iter on DList, rather than having an
     // unbounded list of Option.
-    sprites: DList<Option<Rc<RefCell<Sprite>>>>,
-    textures: HashMap<&'static str, Rc<Tex>>,
+    pub sprites: DList<Option<Rc<RefCell<Sprite>>>>,
+    pub textures: HashMap<&'static str, Rc<Tex>>,
     /// Width of the render surface (used to normalize sprite coordinates)
-    width: GLint,
+    pub width: GLint,
     /// Height of the render surface (used to normalize sprite coordinates)
-    height: GLint,
-    vao: hgl::Vao,
-    vbo: hgl::Vbo,
-    ebo: hgl::Ebo,
+    pub height: GLint,
+    pub vao: hgl::Vao,
+    pub vbo: hgl::Vbo,
+    pub ebo: hgl::Ebo,
 }
 
 impl Engine {
     pub fn new(width: GLint, height: GLint) -> Engine {
-        gl::load_with(glfw::get_proc_address);
         gl::Viewport(0, 0, width, height);
         gl::ClearColor(1.0, 1.0, 1.0, 0.0);
         gl::Enable(gl::BLEND);
@@ -81,7 +80,7 @@ impl Engine {
         for sprite in self.sprites.mut_iter() {
             match sprite {
                 &Some(ref s) => {
-                    if (s.borrow() as *RefCell<Sprite> as int) == (spr.borrow() as *RefCell<Sprite> as int) {
+                    if (s.deref() as *RefCell<Sprite> as int) == (spr.deref() as *RefCell<Sprite> as int) {
                         rem = true;
                     }
                 },
@@ -102,14 +101,14 @@ impl Engine {
         // to avoid swapping out different textures all the time.
         //
         // probably not going to matter though.
-        let mut data = ~[];
-        let mut indices = ~[];
+        let mut data = Vec::new();
+        let mut indices = Vec::new();
         let mut base = 0 as GLuint;
 
         gl::Clear(gl::COLOR_BUFFER_BIT);
 
         for sprite in self.sprites.iter().filter_map(|x| x.as_ref()) {
-            let &Sprite { x, y, height, width, .. } = (*sprite).borrow().borrow().get();
+            let &Sprite { x, y, height, width, .. } = &*sprite.borrow();
 
             // points of the rectangle that makes up this sprite, ccw
             let sdata: &[GLint] = &[
@@ -118,21 +117,21 @@ impl Engine {
                  x + width, y + height, 1, 0,
                  x, y + height, 0, 0
             ];
-            data.extend(&mut sdata.iter().map(|&x| x));
+            data.extend(sdata.iter().map(|&x| x));
 
             let new_indices = &[base, base+1, base+2,
                                 base+2, base+3, base];
-            indices.extend(&mut new_indices.iter().map(|&x| x));
+            indices.extend(new_indices.iter().map(|&x| x));
             base += 4;
         }
 
-        self.vbo.load_data(data, hgl::buffer::DynamicDraw);
-        self.ebo.load_data(indices, hgl::buffer::DynamicDraw);
+        self.vbo.load_data(data.as_slice(), hgl::buffer::DynamicDraw);
+        self.ebo.load_data(indices.as_slice(), hgl::buffer::DynamicDraw);
 
         let mut first = true;
         for (idx, sprite) in self.sprites.iter().filter_map(|x| x.as_ref()).enumerate() {
-            let sprite = (*sprite).borrow().borrow();
-            let tex = sprite.get().texture.borrow();
+            let sprite = sprite.borrow();
+            let tex = &sprite.texture;
 
             tex.texture.activate(0);
 
@@ -148,11 +147,11 @@ impl Engine {
 /// A sprite; a textured rectangle. The origin (x, y) is the bottom left. The
 /// top right is (x + width, y + height).
 pub struct Sprite {
-    x: GLint,
-    y: GLint,
-    height: GLint,
-    width: GLint,
-    texture: Rc<Tex>
+    pub x: GLint,
+    pub y: GLint,
+    pub height: GLint,
+    pub width: GLint,
+    pub texture: Rc<Tex>
 }
 
 impl Sprite {

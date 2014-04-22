@@ -1,4 +1,4 @@
-#![feature(phase)]
+#![feature(phase, macro_rules, trace_macros)]
 #![crate_id = "gerphius"]
 #![crate_type = "bin"]
 
@@ -16,6 +16,14 @@ extern crate noise;
 
 use game::Game;
 use glfw::Context;
+
+macro_rules! debug_assert (
+    ($ex:tt) => (
+        if cfg!(not(ndebug)) {
+            assert!($ex)
+        }
+    )
+)
 
 mod game;
 mod render;

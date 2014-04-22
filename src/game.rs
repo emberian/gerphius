@@ -22,6 +22,16 @@ impl PlayState {
     }
 }
 
+pub struct Player{
+    number: int,
+    velocity: GLfloat,
+    accel: GLfloat,
+    rotation_velocity: GLfloat,
+    rotation_accel: GLfloat,
+    points: int,
+    sprite: Sprite
+}
+
 enum Selected {
     Start,
     Leaderboard,

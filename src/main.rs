@@ -1,17 +1,12 @@
-//! Entry point
-
 #![feature(phase)]
 #![crate_id = "gerphius"]
 #![crate_type = "bin"]
-
-// our dependencies
 
 #[phase(syntax, link)]
 extern crate log;
 extern crate libc;
 extern crate native;
 extern crate collections;
-
 extern crate gl;
 extern crate hgl;
 extern crate png;

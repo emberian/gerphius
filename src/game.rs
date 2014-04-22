@@ -48,7 +48,7 @@ impl Game {
         let quit = Sprite::new(100, 120, 20, 200, quit);
 
         let sprites = vec!(e.add_sprite(start), e.add_sprite(hscores), e.add_sprite(quit));
-        e.remove_sprite(sprites.get(0).clone());
+        // e.remove_sprite(sprites.get(0).clone());
 
         Game {
             state: MainMenu(sprites, Start),

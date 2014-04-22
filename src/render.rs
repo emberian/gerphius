@@ -35,8 +35,8 @@ impl Engine {
         let vao = Vao::new();
         vao.bind();
 
-        let program = Program::link(&[Shader::from_file("vertex.glsl", hgl::program::VertexShader).unwrap().unwrap(),
-                                     Shader::from_file("fragment.glsl", hgl::program::FragmentShader).unwrap().unwrap()
+        let program = Program::link(&[Shader::from_file("assets/vertex.glsl", hgl::program::VertexShader).unwrap().unwrap(),
+                                     Shader::from_file("assets/fragment.glsl", hgl::program::FragmentShader).unwrap().unwrap()
                                     ]).unwrap();
         program.bind_frag(0, "out_color");
         program.bind();
@@ -166,10 +166,10 @@ pub struct Tex {
 
 impl Tex {
     pub fn from_png(p: &str) -> Tex {
-        let path = Path::new(p);
+        let path = Path::new(format!("assets/{}", p));
         let img = match png::load_png(&path) {
             Ok(i) => i,
-            Err(s) => fail!("Could not load png: {}", s)
+            Err(s) => fail!("Could not load png {}: {}", p, s)
         };
 
         let fmt = match img.color_type {

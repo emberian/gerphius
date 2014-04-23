@@ -53,9 +53,9 @@ impl Game {
         let hscores = e.load_texture("menu.highscore", "menu.highscore.png");
         let quit = e.load_texture("menu.quit", "menu.quit.png");
 
-        let start = Sprite::new(100, 200, 20, 200, start);
-        let hscores = Sprite::new(100, 160, 20, 200, hscores);
-        let quit = Sprite::new(100, 120, 20, 200, quit);
+        let start = Sprite::new(-0.5, 0.7, 20, 200, 0., start);
+        let hscores = Sprite::new(-0.5, 0.4, 20, 200, 0., hscores);
+        let quit = Sprite::new(-0.5, 0.1, 20, 200, 0., quit);
 
         let sprites = vec!(e.add_sprite(start), e.add_sprite(hscores), e.add_sprite(quit));
         // e.remove_sprite(sprites.get(0).clone());

@@ -3,6 +3,7 @@
 use gl;
 use hgl;
 use png;
+use std;
 use glfw;
 use std::rc::Rc;
 use std::mem::size_of;
@@ -17,9 +18,9 @@ pub struct Engine {
     pub sprites: DList<Option<Rc<RefCell<Sprite>>>>,
     pub textures: HashMap<&'static str, Rc<Tex>>,
     /// Width of the render surface (used to normalize sprite coordinates)
-    pub width: GLint,
+    pub width: GLfloat,
     /// Height of the render surface (used to normalize sprite coordinates)
-    pub height: GLint,
+    pub height: GLfloat,
     pub vao: hgl::Vao,
     pub vbo: hgl::Vbo,
     pub ebo: hgl::Ebo,
@@ -49,14 +50,14 @@ impl Engine {
         let ebo = Ebo::new();
         ebo.bind();
 
-        vao.enable_int_attrib(&program, "position", gl::INT, 2, 4*size_of::<GLint>() as i32, 0);
-        vao.enable_int_attrib(&program, "texcoord", gl::INT, 2, 4*size_of::<GLint>() as i32, 2 * size_of::<i32>());
+        vao.enable_attrib(&program, "position", gl::FLOAT, 2, 4*size_of::<GLfloat>() as i32, 0);
+        vao.enable_attrib(&program, "texcoord", gl::FLOAT, 2, 4*size_of::<GLfloat>() as i32, 2 * size_of::<i32>());
 
         Engine {
             sprites: DList::new(),
             textures: HashMap::new(),
-            width: width,
-            height: height,
+            width: width as GLfloat,
+            height: height as GLfloat,
             vao: vao,
             vbo: vbo,
             ebo: ebo,
@@ -109,13 +110,14 @@ impl Engine {
 
         for sprite in self.sprites.iter().filter_map(|x| x.as_ref()) {
             let &Sprite { x, y, height, width, .. } = &*sprite.borrow();
-
+            let height = (2. * height as GLfloat) / self.height;
+            let width = (2. * width as GLfloat) / self.width;
             // points of the rectangle that makes up this sprite, ccw
-            let sdata: &[GLint] = &[
-                 x, y, 0, 1,
-                 x + width, y, 1, 1,
-                 x + width, y + height, 1, 0,
-                 x, y + height, 0, 0
+            let sdata: &[GLfloat] = &[
+                 x, y, 0., 1.,
+                 x + width, y, 1., 1.,
+                 x + width, y + height, 1., 0.,
+                 x, y + height, 0., 0.
             ];
             data.extend(sdata.iter().map(|&x| x));
 
@@ -125,12 +127,18 @@ impl Engine {
             base += 4;
         }
 
+        debug!("VBO: {}", data);
+        debug!("EBO: {}", indices);
+
+        debug_assert!({ let max = data.len(); indices.iter().all(|&x| (x as uint) < max)});
+
         self.vbo.load_data(data.as_slice(), hgl::buffer::DynamicDraw);
         self.ebo.load_data(indices.as_slice(), hgl::buffer::DynamicDraw);
 
         let mut first = true;
         for (idx, sprite) in self.sprites.iter().filter_map(|x| x.as_ref()).enumerate() {
             let sprite = sprite.borrow();
+            debug!("Going to be printing sprite {}", *sprite);
             let tex = &sprite.texture;
 
             tex.texture.activate(0);
@@ -147,16 +155,24 @@ impl Engine {
 /// A sprite; a textured rectangle. The origin (x, y) is the bottom left. The
 /// top right is (x + width, y + height).
 pub struct Sprite {
-    pub x: GLint,
-    pub y: GLint,
+    pub x: GLfloat,
+    pub y: GLfloat,
+    pub rot: GLfloat,
     pub height: GLint,
     pub width: GLint,
     pub texture: Rc<Tex>
 }
 
+impl std::fmt::Show for Sprite {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f.buf, "Sprite \\{ x: {}, y: {}, rot: {}, height: {}, width: {}, texture: {} \\}",
+               self.x, self.y, self.rot, self.height, self.width, "NOPE")
+    }
+}
+
 impl Sprite {
-    pub fn new(x: GLint, y: GLint, height: GLint, width: GLint, texture: Rc<Tex>) -> Sprite {
-        Sprite { x: x, y: y, height: height, width: width, texture: texture }
+    pub fn new(x: GLfloat, y: GLfloat, height: GLint, width: GLint, rot: GLfloat, texture: Rc<Tex>) -> Sprite {
+        Sprite { x: x, y: y, height: height, width: width, rot: rot, texture: texture }
     }
 }
 

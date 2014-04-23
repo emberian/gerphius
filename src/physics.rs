@@ -7,13 +7,20 @@
 use std;
 use game;
 
+#[deriving(Eq)]
+pub enum Direction {
+    Forward,
+    Backward,
+    Still
+}
+
 fn get_input() -> char{
     let mut input = std::io::stdin();
     let key = input.read_line().unwrap();
     return key.char_at(0);
 }
 
-pub fn accel(cond:bool, p:&mut game::Player){ //mut player:&mut player would allow to play w/ pointer
+pub fn accel(p:&mut game::Player){ //mut player:&mut player would allow to play w/ pointer
     if p.velocity >= -0.15 && p.velocity <= 0.15{
         p.velocity += p.accel;
     }
@@ -24,15 +31,14 @@ pub fn accel(cond:bool, p:&mut game::Player){ //mut player:&mut player would all
         p.velocity = 0.05
     }
     p.position += p.velocity;
-    let (acc, amod) = accel_compute(true, p.accel, p.accel_mod);
+    let (acc, amod) = accel_compute(p.dir, p.accel, p.accel_mod);
     p.accel = acc;
     p.accel_mod = amod;
-    println!("accel: {} accel_mod: {}, velocity: {}, position: {} ", p.accel, p.accel_mod, p.velocity, p.position);
 }
 
 
-pub fn accel_compute (cond:bool, mut accel:f32, mut accel_mod:int) -> (f32, int) {//this will use accel/accel_mod to compute the rate of increase of acceleration.
-    if cond == true{//player wishes to accelerate forward
+pub fn accel_compute (dir: Direction, mut accel:f32, mut accel_mod:int) -> (f32, int) {//this will use accel/accel_mod to compute the rate of increase of acceleration.
+    if dir == Forward {
         let bounds = [
             (-85, -75, 25),
             (-75, -60, 22),
@@ -59,7 +65,7 @@ pub fn accel_compute (cond:bool, mut accel:f32, mut accel_mod:int) -> (f32, int)
         }
 
     }
-    else if cond == false{//player wishes to accelerate backward
+    else if dir == Backward {
         let bounds = [
             (-86, -75, -2),
             (-75, -60, -5),

@@ -91,7 +91,12 @@ impl Game {
 
     /// Update the game simulation
     pub fn tick(&mut self) {
-
+        match self.state {
+            MainMenu(ref sprites, ref sel) => {
+                sprites.get(0).borrow_mut().rot += 0.03;
+            }
+            _ => { }
+        }
     }
 
     /// Render current contents

@@ -29,8 +29,9 @@ fn get_input() -> char{
 
 fn accel(key:char, p:&mut Player){ //mut player:&mut player would allow to play w/ pointer
     std::io::println(key.to_str());
-    if p.velocity >-0.05 && p.velocity <0.05{
-        p.velocity += p.accel
+    if p.velocity >= -0.05 && p.velocity <= 0.05{
+        p.velocity += p.accel;
+        //p.velocity = velocity_compute(p.velocity, p.accel);
     }
     if p.velocity < -0.05{
         p.velocity = -0.05;
@@ -51,26 +52,29 @@ fn accel(key:char, p:&mut Player){ //mut player:&mut player would allow to play 
 }
 
 
-fn accel_compute (cond:bool, mut accel:f32, mut accel_mod:int) -> (f32, int) {
+fn accel_compute (cond:bool, mut accel:f32, mut accel_mod:int) -> (f32, int) {//this will use accel/accel_mod to compute the rate of increase of acceleration.
 
     if cond == true{//player wishes to accelerate forward
-        if accel_mod <=-85 && accel_mod > -75{
+        if accel_mod >=-85 && accel_mod < -75{
             accel_mod += 25;
         }
-        else if accel_mod <=-75 && accel_mod > -60{
+        else if accel_mod >=-75 && accel_mod < -60{
             accel_mod += 22;
         }
-        else if accel_mod <=-60 && accel_mod > -41{
+        else if accel_mod >=-60 && accel_mod < -41{
             accel_mod += 19;
         }
-        else if accel_mod <=-40 && accel_mod > -15{
+        else if accel_mod >=-40 && accel_mod < -15{
             accel_mod += 17;
         }
-        else if accel_mod <=-15 && accel_mod < 0{
+        else if accel_mod >=-15 && accel_mod < 0{
             accel_mod = 0;
         }
         else if accel_mod == 0{
             accel_mod = 15;
+        }
+        else if accel_mod >= 0 && accel_mod < 15{
+            accel_mod += 12;
         }
         else if accel_mod >= 15 && accel_mod <= 40{
             accel_mod +=10;
@@ -86,35 +90,38 @@ fn accel_compute (cond:bool, mut accel:f32, mut accel_mod:int) -> (f32, int) {
         }
     }
     else if cond == false{//player wishes to accelerate backward
-        if accel_mod <=-85 && accel_mod > -75{
-            accel_mod += 25;
+        if accel_mod >=-85 && accel_mod > -75{
+            accel_mod += -2;
         }
-        else if accel_mod <=-75 && accel_mod > -60{
-            accel_mod += 22;
+        else if accel_mod >=-75 && accel_mod > -60{
+            accel_mod += -5;
         }
-        else if accel_mod <=-60 && accel_mod > -41{
-            accel_mod += 19;
+        else if accel_mod >=-60 && accel_mod > -41{
+            accel_mod += -8;
         }
-        else if accel_mod <=-40 && accel_mod > -15{
-            accel_mod += 17;
+        else if accel_mod >=-40 && accel_mod > -15{
+            accel_mod += -10;
         }
-        else if accel_mod <=-15 && accel_mod < 0{
-            accel_mod = 0;
+        else if accel_mod >=-15 && accel_mod < 0{
+            accel_mod += -12;
         }
         else if accel_mod == 0{
-            accel_mod = 15;
+            accel_mod = -15;
+        }
+        else if accel_mod > 0 && accel_mod <= 15{
+            accel_mod = 0;
         }
         else if accel_mod >= 15 && accel_mod <= 40{
-            accel_mod +=10;
+            accel_mod +=-17;
         }
         else if accel_mod > 40 && accel_mod <= 60{
-            accel_mod +=8;
+            accel_mod +=-19;
         }
         else if accel_mod >60 && accel_mod <= 75{
-            accel_mod += 5;
+            accel_mod += -22;
         }
         else if accel_mod >75 && accel_mod <=85{
-            accel_mod += 2;
+            accel_mod += -25;
         }
     }
     if accel <= 0.05 && accel >= -0.05{

@@ -5,7 +5,9 @@
 //      Potentially ticks holding a button and ticks not
 //      Rotation accel/vel
 use std;
-fn main(){
+use game;
+
+/*fn main(){
     let mut p:Player = Player{accel:0., velocity:0., position:0., accel_mod:0};
     loop{
     let key = get_input();
@@ -21,6 +23,7 @@ struct Player{
     accel_mod:int
 
 }
+*/
 
 fn get_input() -> char{
     let mut input = std::io::stdin();
@@ -28,8 +31,7 @@ fn get_input() -> char{
     return key.char_at(0);
 }
 
-fn accel(key:char, p:&mut Player){ //mut player:&mut player would allow to play w/ pointer
-    std::io::println(key.to_str());
+pub fn accel(cond:bool, p:&mut game::Player){ //mut player:&mut player would allow to play w/ pointer
     if p.velocity >= -0.15 && p.velocity <= 0.15{
         p.velocity += p.accel;
     }
@@ -40,19 +42,14 @@ fn accel(key:char, p:&mut Player){ //mut player:&mut player would allow to play 
         p.velocity = 0.05
     }
     p.position += p.velocity;
-    if key == 'w'{
-        let (acc, amod) = accel_compute(true, p.accel, p.accel_mod);
-        *p = Player {accel:acc, accel_mod: amod, ..*p};//create new player, in place of old one. Replace accel_mod and accel, and then use all old values.
-    }
-    if key == 's'{
-        let (acc, amod) = accel_compute(false, p.accel, p.accel_mod);
-        *p = Player {accel:acc, accel_mod: amod, ..*p};
-    }
+    let (acc, amod) = accel_compute(true, p.accel, p.accel_mod);
+    p.accel = acc;
+    p.accel_mod = amod;
     println!("accel: {} accel_mod: {}, velocity: {}, position: {} ", p.accel, p.accel_mod, p.velocity, p.position);
 }
 
 
-fn accel_compute (cond:bool, mut accel:f32, mut accel_mod:int) -> (f32, int) {//this will use accel/accel_mod to compute the rate of increase of acceleration.
+pub fn accel_compute (cond:bool, mut accel:f32, mut accel_mod:int) -> (f32, int) {//this will use accel/accel_mod to compute the rate of increase of acceleration.
 
     if cond == true{//player wishes to accelerate forward
         if accel_mod >=-85 && accel_mod < -75{

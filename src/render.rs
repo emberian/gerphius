@@ -25,7 +25,9 @@ pub struct Engine {
     pub vbo: hgl::Vbo,
     pub ebo: hgl::Ebo,
     pub program: hgl::Program,
-    pub rot: GLint,
+    pub uni_rot: GLint,
+    pub uni_sprite: GLint,
+    pub uni_center: GLint,
 }
 
 impl Engine {
@@ -41,11 +43,13 @@ impl Engine {
         let program = Program::link(&[Shader::from_file("assets/vertex.glsl", hgl::program::VertexShader).unwrap().unwrap(),
                                      Shader::from_file("assets/fragment.glsl", hgl::program::FragmentShader).unwrap().unwrap()
                                     ]).unwrap();
-        let rot = program.uniform("rotation");
+        let uni_rot = program.uniform("rotation");
+        let uni_sprite = program.uniform("sprite");
+        let uni_center = program.uniform("center");
         program.bind_frag(0, "out_color");
         program.bind();
 
-        gl::Uniform1i(program.uniform("sprite"), 0);
+        gl::Uniform1i(uni_sprite, 0);
         gl::Uniform2f(program.uniform("windowsize"), width as GLfloat, height as GLfloat);
 
         let vbo = Vbo::new();
@@ -65,7 +69,9 @@ impl Engine {
             vao: vao,
             vbo: vbo,
             ebo: ebo,
-            rot: rot,
+            uni_rot: uni_rot,
+            uni_sprite: uni_sprite,
+            uni_center: uni_center,
         }
     }
 
@@ -115,8 +121,8 @@ impl Engine {
 
         for sprite in self.sprites.iter().filter_map(|x| x.as_ref()) {
             let &Sprite { x, y, height, width, .. } = &*sprite.borrow();
-            let height = (2. * height as GLfloat) / self.height;
-            let width = (2. * width as GLfloat) / self.width;
+            let height = norm(height as GLfloat, self.height);
+            let width = norm(width as GLfloat, self.width);
             // points of the rectangle that makes up this sprite, ccw
             let sdata: &[GLfloat] = &[
                  x, y, 0., 1.,
@@ -143,11 +149,16 @@ impl Engine {
         let mut first = true;
         for (idx, sprite) in self.sprites.iter().filter_map(|x| x.as_ref()).enumerate() {
             let sprite = sprite.borrow();
+            let height = norm(sprite.height as GLfloat, self.height);
+            let width = norm(sprite.width as GLfloat, self.width);
             debug!("Going to be printing sprite {}", *sprite);
             let tex = &sprite.texture;
 
             tex.texture.activate(0);
-            gl::Uniform1f(self.rot, sprite.rot);
+            gl::Uniform1f(self.uni_rot, sprite.rot);
+            gl::Uniform2f(self.uni_center,
+                          (sprite.x + sprite.x + width) / 2.0,
+                          (sprite.y + sprite.y + height) / 2.0);
 
             // eugh
             let start = if first { first = false; 0 } else { (idx * 6) };
@@ -210,4 +221,8 @@ impl Tex {
 
         Tex { texture: gltex }
     }
+}
+
+fn norm(a: GLfloat, b: GLfloat) -> GLfloat {
+    (2.0 * a) / b
 }

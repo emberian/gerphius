@@ -2,6 +2,7 @@
 
 uniform vec2 windowsize;
 uniform float rotation;
+uniform vec2 center;
 
 in vec2 position;
 in vec2 texcoord;
@@ -17,6 +18,9 @@ void main() {
             0, 0, 1, 0,
             0, 0, 0, 1
     );
-    gl_Position = rzm * vec4(position, 0.0, 1.0);
+
+    vec4 pos = vec4(position - center, 0.0, 1.0);
+
+    gl_Position = (rzm * pos) + vec4(center, 0.0, 0.0);
     Texcoord = vec2(texcoord);
 }

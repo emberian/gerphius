@@ -7,24 +7,6 @@
 use std;
 use game;
 
-/*fn main(){
-    let mut p:Player = Player{accel:0., velocity:0., position:0., accel_mod:0};
-    loop{
-    let key = get_input();
-    accel(key, &mut p);
-    }
-}
-
-struct Player{
-
-    accel:f32,
-    velocity:f32,
-    position:f32,
-    accel_mod:int
-
-}
-*/
-
 fn get_input() -> char{
     let mut input = std::io::stdin();
     let key = input.read_line().unwrap();

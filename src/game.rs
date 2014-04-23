@@ -1,5 +1,6 @@
 //! Game logic
 
+use gl;
 use std;
 use libc;
 use glfw;
@@ -70,7 +71,7 @@ impl Game {
         let hscores = Sprite::new(-0.5, 0.4, 20, 200, 0.2, hscores);
         let quit = Sprite::new(-0.5, 0.1, 20, 200, 0.1, quit);
 
-        let bg = Sprite::new(-1., -1., width, height, 0., e.load_texture("bg", "ring.png"));
+        let bg = Sprite::new(-1., -1., width, height, std::f32::consts::PI / 6., e.load_texture("bg", "ring.png"));
 
         let sprites = vec!(e.add_sprite(start), e.add_sprite(hscores), e.add_sprite(quit), e.add_sprite(bg));
 
@@ -88,8 +89,13 @@ impl Game {
     pub fn handle_event(&mut self, window: &glfw::Window,
                         (_time, event): (f64, glfw::WindowEvent)) {
         match event{
-            glfw::KeyEvent(glfw::KeyW, _, glfw::Press, _) => {
+            glfw::KeyEvent(glfw::KeyW, _, glfw::Press, _) | glfw::KeyEvent(glfw::KeyW, _, glfw::Repeat, _) => {
                 accel(true, &mut self.p1);
+            },
+            glfw::SizeEvent(x, y) => {
+                self.engine.width = x as GLfloat;
+                self.engine.height = y as GLfloat;
+                gl::Viewport(0, 0, x, y);
             }
             _ => { }
         }

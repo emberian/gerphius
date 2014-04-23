@@ -56,10 +56,13 @@ impl Game {
         let start = e.load_texture("menu.start", "menu.start.png");
         let p1tex = e.load_texture("p1tex", "p1tex.png");
         let p2tex = e.load_texture("p2tex", "p2tex.png");
+
         let mut p1:Player = Player{number:1, position:-0.8, velocity:0.0, accel: 0.0, accel_mod:0,
                             rotation_velocity:0.0, rotation_accel:0.0, points:0, sprite:Sprite::new(0.0, 0.0, 20, 20, 0.0, p1tex)};
+
         let mut p2:Player = Player{number:2, position:0.8, velocity:0.0, accel: 0.0, accel_mod:0,
                             rotation_velocity:0.0, rotation_accel:0.0, points:0, sprite:Sprite::new(0.0, 0.0, 20, 20, 0.0, p2tex)};
+
         let hscores = e.load_texture("menu.highscore", "menu.highscore.png");
         let quit = e.load_texture("menu.quit", "menu.quit.png");
 
@@ -67,7 +70,10 @@ impl Game {
         let hscores = Sprite::new(-0.5, 0.4, 20, 200, 0.2, hscores);
         let quit = Sprite::new(-0.5, 0.1, 20, 200, 0.1, quit);
 
-        let sprites = vec!(e.add_sprite(start), e.add_sprite(hscores), e.add_sprite(quit));
+        let bg = Sprite::new(-1., -1., width, height, 0., e.load_texture("bg", "ring.png"));
+
+        let sprites = vec!(e.add_sprite(start), e.add_sprite(hscores), e.add_sprite(quit), e.add_sprite(bg));
+
         // e.remove_sprite(sprites.get(0).clone());
 
         Game {

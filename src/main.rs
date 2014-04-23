@@ -45,7 +45,7 @@ fn main() {
 
     // opengl 3.2 core profile
 
-    let (window, events) = glfw.create_window(400, 300, "Gerphius", glfw::Windowed)
+    let (window, events) = glfw.create_window(400, 400, "Gerphius", glfw::Windowed)
                                .expect("Error: could not open a window!");
 
     // we want every event
@@ -55,7 +55,7 @@ fn main() {
 
     gl::load_with(|s| glfw.get_proc_address(s));
 
-    let mut game = Game::new(400, 300);
+    let mut game = Game::new(400, 400);
 
     while !window.should_close() {
         glfw.poll_events();

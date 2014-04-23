@@ -27,7 +27,7 @@ macro_rules! debug_assert (
 
 mod game;
 mod render;
-mod movement;
+mod physics;
 
 #[start]
 fn start(argc: int, argv: **u8) -> int {

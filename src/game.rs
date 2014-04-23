@@ -9,7 +9,7 @@ use std::rc::Rc;
 use gl::types::{GLint, GLfloat};
 use std::cell::RefCell;
 use render::{Tex, Sprite, Engine};
-use movement::{accel, accel_compute};
+use physics::{accel, accel_compute};
 
 pub struct Game {
     state: GameState,

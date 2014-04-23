@@ -24,6 +24,8 @@ pub struct Engine {
     pub vao: hgl::Vao,
     pub vbo: hgl::Vbo,
     pub ebo: hgl::Ebo,
+    pub program: hgl::Program,
+    pub rot: GLint,
 }
 
 impl Engine {
@@ -39,6 +41,7 @@ impl Engine {
         let program = Program::link(&[Shader::from_file("assets/vertex.glsl", hgl::program::VertexShader).unwrap().unwrap(),
                                      Shader::from_file("assets/fragment.glsl", hgl::program::FragmentShader).unwrap().unwrap()
                                     ]).unwrap();
+        let rot = program.uniform("rotation");
         program.bind_frag(0, "out_color");
         program.bind();
 
@@ -58,9 +61,11 @@ impl Engine {
             textures: HashMap::new(),
             width: width as GLfloat,
             height: height as GLfloat,
+            program: program,
             vao: vao,
             vbo: vbo,
             ebo: ebo,
+            rot: rot,
         }
     }
 
@@ -142,6 +147,7 @@ impl Engine {
             let tex = &sprite.texture;
 
             tex.texture.activate(0);
+            gl::Uniform1f(self.rot, sprite.rot);
 
             // eugh
             let start = if first { first = false; 0 } else { (idx * 6) };

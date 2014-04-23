@@ -8,6 +8,7 @@ use std::rc::Rc;
 use gl::types::GLint;
 use std::cell::RefCell;
 use render::{Tex, Sprite, Engine};
+use movement::{accel, accel_compute};
 
 pub struct Game {
     state: GameState,
@@ -24,8 +25,10 @@ impl PlayState {
 
 pub struct Player{
     number: int,
+    position: GLfloat,
     velocity: GLfloat,
     accel: GLfloat,
+    accel_mod: GLfloat,
     rotation_velocity: GLfloat,
     rotation_accel: GLfloat,
     points: int,

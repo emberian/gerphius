@@ -1,9 +1,10 @@
 //inherited mutability: player is mutable if let is mutable
 
-
-//todo: Implement negative scaling on accel_compute
-//      Implement velocity_compute based on the above
-
+//todo: Test in ticks
+//      Implement player acceleration based on ticks between inputs.
+//      Potentially ticks holding a button and ticks not
+//      Rotation accel/vel
+use std;
 fn main(){
     let mut p:Player = Player{accel:0., velocity:0., position:0., accel_mod:0};
     loop{
@@ -29,9 +30,8 @@ fn get_input() -> char{
 
 fn accel(key:char, p:&mut Player){ //mut player:&mut player would allow to play w/ pointer
     std::io::println(key.to_str());
-    if p.velocity >= -0.05 && p.velocity <= 0.05{
+    if p.velocity >= -0.15 && p.velocity <= 0.15{
         p.velocity += p.accel;
-        //p.velocity = velocity_compute(p.velocity, p.accel);
     }
     if p.velocity < -0.05{
         p.velocity = -0.05;

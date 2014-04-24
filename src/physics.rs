@@ -22,7 +22,7 @@ fn get_input() -> char{
 
 pub fn accel(p:&mut game::Player){ //mut player:&mut player would allow to play w/ pointer
     if p.velocity >= -0.15 && p.velocity <= 0.15{
-        p.velocity += p.accel;
+        p.velocity += (p.accel*0.00001);
     }
     if p.velocity < -0.05{
         p.velocity = -0.05;
@@ -92,7 +92,7 @@ pub fn accel_compute (dir: Direction, mut accel:f32, mut accel_mod:int) -> (f32,
     }
 
     if accel <= 0.05 && accel >= -0.05{
-        accel = accel + (0.0000003 * (accel_mod as f32));
+        accel = accel + (0.00003 * (accel_mod as f32));
     }
 
     (accel, accel_mod) //returns accel and accel mod

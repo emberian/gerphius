@@ -23,7 +23,8 @@ struct PlayState;
 
 pub struct Player {
     pub number: int,
-    pub position: GLfloat,
+    pub positionx: GLfloat,
+    pub positiony: GLfloat,
     pub velocity: GLfloat,
     pub accel: GLfloat,
     pub accel_mod: int,
@@ -61,10 +62,10 @@ impl Game {
         let p1s = Sprite::new(0.0, 0.0, 0.05, 0.05, 0.0, p1tex);
         let p2s = Sprite::new(0.0, 0.0, 0.05, 0.05, 0.0, p2tex);
 
-        let p1: Player = Player{number:1, position:-0.8, velocity:0.0, accel: 0.0, accel_mod:0,
+        let p1: Player = Player{number:1, positionx:-0.8, positiony:0.0, velocity:0.0, accel: 0.0, accel_mod:0,
             rotation: 0.0, points:0, sprite: e.add_sprite(p1s), dir:Still, rot:Norot};
 
-        let p2: Player = Player{number:2, position:0.8, velocity:0.0, accel: 0.0, accel_mod:0,
+        let p2: Player = Player{number:2, positionx:0.8, positiony:0.0, velocity:0.0, accel: 0.0, accel_mod:0,
             rotation: 0.0, points:0, sprite: e.add_sprite(p2s), dir:Still, rot:Norot};
 
         let hscores = e.load_texture("menu.highscore", "menu.highscore.png");
@@ -139,8 +140,8 @@ impl Game {
         rotate(&mut self.p2);
 
         if self.counter % 30 == 0 {
-            println!("accel: {} accel_mod: {}, velocity: {}, position: {} rot: {}", self.p1.accel, self.p1.accel_mod, self.p1.velocity, self.p1.position, self.p1.rotation);
-            println!("accel: {} accel_mod: {}, velocity: {}, position: {} rot: {}", self.p2.accel, self.p2.accel_mod, self.p2.velocity, self.p2.position, self.p2.rotation);
+            println!("accel: {} accel_mod: {}, velocity: {}, x: {}, y: {}, rot: {}", self.p1.accel, self.p1.accel_mod, self.p1.velocity, self.p1.positionx, self.p1.positiony, self.p1.rotation);
+            println!("accel: {} accel_mod: {}, velocity: {}, x: {}, y: {}, rot: {}", self.p2.accel, self.p2.accel_mod, self.p2.velocity, self.p2.positionx, self.p2.positiony, self.p2.rotation);
         }
 
         self.p1.dir = Still;
@@ -148,8 +149,10 @@ impl Game {
         self.p1.rot = Norot;
         self.p2.rot = Norot;
 
-        self.p1.sprite.borrow_mut().x = self.p1.position;
-        self.p2.sprite.borrow_mut().x = self.p2.position;
+        self.p1.sprite.borrow_mut().x = self.p1.positionx;
+        self.p2.sprite.borrow_mut().x = self.p2.positionx;
+        self.p1.sprite.borrow_mut().y = self.p1.positiony;
+        self.p2.sprite.borrow_mut().y = self.p2.positiony;
         self.p1.sprite.borrow_mut().rot = self.p1.rotation;
         self.p2.sprite.borrow_mut().rot = self.p2.rotation;
         if physics::collide(&*self.p1.sprite.borrow(), &*self.p2.sprite.borrow()) {

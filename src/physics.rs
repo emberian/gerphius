@@ -27,10 +27,10 @@ pub enum Rotation {
 pub fn rotate(p: &mut game::Player){
     use std::f32::consts::PI;
     if p.rot == Left{
-        p.rotation += PI / 90.0;
+        p.rotation += PI / 20.0;
     }
     if p.rot == Right{
-        p.rotation -= PI / 90.0;
+        p.rotation -= PI / 20.0;
     }
 }
 
@@ -47,7 +47,8 @@ pub fn accel(p: &mut game::Player){ //mut player:&mut player would allow to play
         p.velocity = 0.05
     }
 
-    p.position += p.velocity;
+    p.positionx += p.rotation.cos() * p.velocity;
+    p.positiony += p.rotation.sin() * p.velocity;
 
     let (acc, amod) = accel_compute(p.dir, p.accel, p.accel_mod);
 

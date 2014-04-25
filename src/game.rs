@@ -65,7 +65,7 @@ impl Game {
         let p1: Player = Player{number:1, positionx:-0.8, positiony:0.0, velocity:0.0, accel: 0.0, accel_mod:0,
             rotation: 0.0, points:0, sprite: e.add_sprite(p1s), dir:Still, rot:Norot};
 
-        let p2: Player = Player{number:2, positionx:0.8, positiony:0.0, velocity:0.0, accel: 0.0, accel_mod:0,
+        let p2: Player = Player{number:2, positionx:0.7, positiony:0.0, velocity:0.0, accel: 0.0, accel_mod:0,
             rotation: 0.0, points:0, sprite: e.add_sprite(p2s), dir:Still, rot:Norot};
 
         let hscores = e.load_texture("menu.highscore", "menu.highscore.png");

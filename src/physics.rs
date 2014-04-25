@@ -67,9 +67,10 @@ pub fn accel_compute (dir: Direction, mut accel:f32, mut accel_mod:int) -> (f32,
     }
     else if dir == Backward {
         let bounds = [
-            (-86, -75, -2),
+            (-85, -75, -2),
             (-75, -60, -5),
             (-60, -41, -8),
+            (-40, -15, -10),
             (-15, 0, -12),
             (15, 40, 17),
             (40, 60, 19),

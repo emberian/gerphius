@@ -35,22 +35,22 @@ pub fn rotate(p: &mut game::Player){
 }
 
 pub fn accel(p: &mut game::Player){ //mut player:&mut player would allow to play w/ pointer
+    let (acc, amod) = accel_compute(p.dir, p.accel, p.accel_mod);
+
     if p.velocity >= -0.15 && p.velocity <= 0.15 {
         p.velocity += p.accel * 0.0001;
     }
 
-    if p.velocity < -0.05 {
-        p.velocity = -0.05;
+    if p.velocity < -0.008 {
+        p.velocity = -0.008;
     }
 
-    if p.velocity >= 0.05 {
-        p.velocity = 0.05
+    if p.velocity >= 0.008 {
+        p.velocity = 0.008
     }
 
     p.positionx += p.rotation.cos() * p.velocity;
     p.positiony += p.rotation.sin() * p.velocity;
-
-    let (acc, amod) = accel_compute(p.dir, p.accel, p.accel_mod);
 
     p.accel = acc;
     p.accel_mod = amod;
@@ -89,7 +89,7 @@ pub fn accel_compute (dir: Direction, mut accel: f32, mut accel_mod: int) -> (f3
 
     } else if dir == Backward {
         let bounds = [
-            (-85, -75, -2),
+            (-85, -75, -10),
             (-75, -60, -5),
             (-60, -41, -8),
             (-40, -15, -10),
@@ -116,10 +116,12 @@ pub fn accel_compute (dir: Direction, mut accel: f32, mut accel_mod: int) -> (f3
         }
     }
 
-    if accel <= 0.05 && accel >= -0.05 {
-        accel = accel + (0.00003 * (accel_mod as f32));
+    let max = 0.04;
+
+    if accel >= -max && accel <= max {
+        accel += 0.08 * (accel_mod as f32);
     } else {
-        accel = accel.signum() * 0.05;
+        accel = accel.signum() * max;
     }
 
     (accel, accel_mod) //returns accel and accel mod

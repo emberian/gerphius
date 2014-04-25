@@ -4,7 +4,6 @@ use gl;
 use hgl;
 use png;
 use std;
-use glfw;
 use std::rc::Rc;
 use std::mem::size_of;
 use std::cell::RefCell;
@@ -33,7 +32,7 @@ pub struct Engine {
 impl Engine {
     pub fn new(width: GLint, height: GLint) -> Engine {
         gl::Viewport(0, 0, width, height);
-        gl::ClearColor(1.0, 1.0, 1.0, 0.0);
+        gl::ClearColor(1.0, 1.0, 1.0, 1.0);
         gl::Enable(gl::BLEND);
         gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
 
@@ -87,6 +86,7 @@ impl Engine {
         s
     }
 
+    #[allow(dead_code)]
     pub fn remove_sprite(&mut self, spr: Rc<RefCell<Sprite>>) {
         let mut rem = false;
         for sprite in self.sprites.mut_iter() {
@@ -121,8 +121,8 @@ impl Engine {
 
         for sprite in self.sprites.iter().filter_map(|x| x.as_ref()) {
             let &Sprite { x, y, height, width, .. } = &*sprite.borrow();
-            let height = norm(height as GLfloat, self.height);
-            let width = norm(width as GLfloat, self.width);
+            let height = 2.0 * height;
+            let width = 2.0 * width;
             // points of the rectangle that makes up this sprite, ccw
             let sdata: &[GLfloat] = &[
                  x, y, 0., 1.,
@@ -149,16 +149,16 @@ impl Engine {
         let mut first = true;
         for (idx, sprite) in self.sprites.iter().filter_map(|x| x.as_ref()).enumerate() {
             let sprite = sprite.borrow();
-            let height = norm(sprite.height as GLfloat, self.height);
-            let width = norm(sprite.width as GLfloat, self.width);
+            let height = 2.0 * sprite.height;
+            let width = 2.0 * sprite.width;
             debug!("Going to be printing sprite {}", *sprite);
             let tex = &sprite.texture;
 
             tex.texture.activate(0);
             gl::Uniform1f(self.uni_rot, sprite.rot);
             gl::Uniform2f(self.uni_center,
-                          (sprite.x + sprite.x + width) / 2.0,
-                          (sprite.y + sprite.y + height) / 2.0);
+                          (2.0 * sprite.x + width ) / 2.0,
+                          (2.0 * sprite.y + height) / 2.0);
 
             // eugh
             let start = if first { first = false; 0 } else { (idx * 6) };
@@ -221,8 +221,4 @@ impl Tex {
 
         Tex { texture: gltex }
     }
-}
-
-fn norm(a: GLfloat, b: GLfloat) -> GLfloat {
-    (2.0 * a) / b
 }

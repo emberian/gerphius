@@ -4,8 +4,9 @@
 //      Implement player acceleration based on ticks between inputs.
 //      Potentially ticks holding a button and ticks not
 //      Rotation accel/vel
-use std;
 use game;
+
+use std::cmp::{max, min};
 
 pub use self::collision::collide;
 
@@ -16,15 +17,9 @@ pub enum Direction {
     Still
 }
 
-fn get_input() -> char{
-    let mut input = std::io::stdin();
-    let key = input.read_line().unwrap();
-    return key.char_at(0);
-}
-
 pub fn accel(p:&mut game::Player){ //mut player:&mut player would allow to play w/ pointer
     if p.velocity >= -0.15 && p.velocity <= 0.15{
-        p.velocity += (p.accel*0.00001);
+        p.velocity += p.accel * 0.0001;
     }
     if p.velocity < -0.05{
         p.velocity = -0.05;
@@ -53,13 +48,15 @@ pub fn accel_compute (dir: Direction, mut accel:f32, mut accel_mod:int) -> (f32,
             (75, 85, 2)
         ];
 
+        accel_mod = max(accel_mod, -84);
+
         if accel_mod == 0 {
             accel_mod = 15;
         } else if accel_mod >= -15 && accel_mod < 0 {
             accel_mod = 0;
         } else {
             for &(lower, upper, increment) in bounds.iter() {
-                if accel_mod >= lower && accel_mod < upper {
+                if accel_mod >= lower && accel_mod <= upper {
                     accel_mod += increment;
                     break
                 }
@@ -80,13 +77,15 @@ pub fn accel_compute (dir: Direction, mut accel:f32, mut accel_mod:int) -> (f32,
             (75, 85, -25)
         ];
 
+        accel_mod = min(accel_mod, 84);
+
         if accel_mod == 0 {
             accel_mod = -15;
         } else if accel_mod <= 15 && accel_mod > 0 {
             accel_mod = 0;
         } else {
             for &(lower, upper, increment) in bounds.iter() {
-                if accel_mod >= lower && accel_mod < upper {
+                if accel_mod >= lower && accel_mod <= upper {
                     accel_mod += increment;
                     break
                 }
@@ -209,7 +208,7 @@ mod collision {
 
         for &(a1, a2) in pairs.iter() {
             for &(b1, b2) in pairs.iter() {
-                if intersect((apoints[a1], apoints[b2]), (bpoints[b1], bpoints[b2])) != None {
+                if intersect((apoints[a1], apoints[a2]), (bpoints[b1], bpoints[b2])) != None {
                     return true;
                 }
             }

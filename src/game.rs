@@ -59,8 +59,8 @@ impl Game {
         let p1tex = e.load_texture("p1tex", "p1tex.png");
         let p2tex = e.load_texture("p2tex", "p2tex.png");
 
-        let p1s = Sprite::new(0.0, 0.0, 20, 20, 0.0, p1tex);
-        let p2s = Sprite::new(0.0, 0.0, 20, 20, 0.0, p2tex);
+        let p1s = Sprite::new(0.0, 0.0, 0.05, 0.05, 0.0, p1tex);
+        let p2s = Sprite::new(0.0, 0.0, 0.05, 0.05, 0.0, p2tex);
 
         let mut p1:Player = Player{number:1, position:-0.8, velocity:0.0, accel: 0.0, accel_mod:0,
                             rotation_velocity:0.0, rotation_accel:0.0, points:0, sprite: e.add_sprite(p1s),
@@ -73,11 +73,11 @@ impl Game {
         let hscores = e.load_texture("menu.highscore", "menu.highscore.png");
         let quit = e.load_texture("menu.quit", "menu.quit.png");
 
-        let start = Sprite::new(-0.5, 0.7, 20, 200, 0.5, start);
-        let hscores = Sprite::new(-0.5, 0.4, 20, 200, 0.2, hscores);
-        let quit = Sprite::new(-0.5, 0.1, 20, 200, 0.1, quit);
+        let start = Sprite::new(-0.5, 0.7, 0.05, 0.5, 0.5, start);
+        let hscores = Sprite::new(-0.5, 0.4, 0.05, 0.5, 0.2, hscores);
+        let quit = Sprite::new(-0.5, 0.1, 0.05, 0.5, 0.1, quit);
 
-        let bg = Sprite::new(-1., -1., width, height, std::f32::consts::PI / 6., e.load_texture("bg", "ring.png"));
+        let bg = Sprite::new(-1., -1., 1.0, 1.0, std::f32::consts::PI / 6., e.load_texture("bg", "ring.png"));
 
         let sprites = vec!(e.add_sprite(start), e.add_sprite(hscores), e.add_sprite(quit), e.add_sprite(bg));
 

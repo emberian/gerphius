@@ -175,8 +175,8 @@ pub struct Sprite {
     pub x: GLfloat,
     pub y: GLfloat,
     pub rot: GLfloat,
-    pub height: GLint,
-    pub width: GLint,
+    pub height: GLfloat,
+    pub width: GLfloat,
     pub texture: Rc<Tex>
 }
 
@@ -188,7 +188,7 @@ impl std::fmt::Show for Sprite {
 }
 
 impl Sprite {
-    pub fn new(x: GLfloat, y: GLfloat, height: GLint, width: GLint, rot: GLfloat, texture: Rc<Tex>) -> Sprite {
+    pub fn new(x: GLfloat, y: GLfloat, height: GLfloat, width: GLfloat, rot: GLfloat, texture: Rc<Tex>) -> Sprite {
         Sprite { x: x, y: y, height: height, width: width, rot: rot, texture: texture }
     }
 }

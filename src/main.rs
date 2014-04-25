@@ -1,4 +1,4 @@
-#![feature(phase, macro_rules, trace_macros)]
+#![feature(phase, macro_rules, trace_macros, log_syntax)]
 #![crate_id = "gerphius"]
 #![crate_type = "bin"]
 

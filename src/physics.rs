@@ -107,6 +107,7 @@ mod collision {
     use cgmath::matrix::{Matrix, Matrix2};
     use gl::types::GLfloat;
     use render::Sprite;
+    use std::f32::consts::PI;
 
     type V = Vector2<GLfloat>;
 
@@ -162,7 +163,7 @@ mod collision {
         let c = Vector2::new(-1f32, 1f32);
         let d = Vector2::new(1f32, -1f32);
 
-        assert_eq!(intersect((a, b), (c, d)), Some(Vector2::new(0f32, 0.0)));
+        assert_eq!(intersect((a, b), (c, d)), Some(Vector2::new(0f32, 0f32)));
     }
 
     /// Determines if two Sprites collide, assuming that they collide iff their
@@ -173,8 +174,20 @@ mod collision {
         // make lists of points making up each sprite, transformed with the
         // rotation
 
-        let amat = Matrix2::from_angle(Rad { s: a.rot });
-        let bmat = Matrix2::from_angle(Rad { s: b.rot });
+        let mut arot = a.rot;
+        let mut brot = b.rot;
+
+        // make sure their slopes aren't NaN :(
+        if arot % (PI / 4.0) == 0.0 {
+            arot += 0.01;
+        }
+
+        if brot % (PI / 4.0) == 0.0 {
+            brot += 0.01;
+        }
+
+        let amat = Matrix2::from_angle(Rad { s: arot });
+        let bmat = Matrix2::from_angle(Rad { s: brot });
 
         let pairs = [(0, 1), (1, 2), (2, 3), (3, 0)]; // which indices form lines we care about?
 
@@ -203,6 +216,44 @@ mod collision {
         }
 
         false
+    }
+
+    #[test]
+    fn test_collide() {
+        use std;
+
+        let s1 = Sprite::new(0.0, 0.0, 1.0, 1.0, 0.0, unsafe { std::mem::uninit() });
+        let s2 = Sprite::new(0.5, 0.5, 1.0, 1.0, 0.0, unsafe { std::mem::uninit() });
+
+        assert_eq!(collide(&s1, &s2), true);
+
+        unsafe {
+            // since we're stubbing out the texture
+            std::cast::forget(s1);
+            std::cast::forget(s2);
+        }
+
+        let s1 = Sprite::new(0.0, 0.0, 1.0, 1.0, 0.0, unsafe { std::mem::uninit() });
+        let s2 = Sprite::new(1.0, 1.0, 1.0, 1.0, 0.0, unsafe { std::mem::uninit() });
+
+        assert_eq!(collide(&s1, &s2), true);
+
+        unsafe {
+            // since we're stubbing out the texture
+            std::cast::forget(s1);
+            std::cast::forget(s2);
+        }
+
+        let s1 = Sprite::new(0.0, 0.0, 1.0, 1.0, 0.0, unsafe { std::mem::uninit() });
+        let s2 = Sprite::new(0.0, 0.0, 1.0, 1.0, 0.5, unsafe { std::mem::uninit() });
+
+        assert_eq!(collide(&s1, &s2), true);
+
+        unsafe {
+            // since we're stubbing out the texture
+            std::cast::forget(s1);
+            std::cast::forget(s2);
+        }
     }
 }
 

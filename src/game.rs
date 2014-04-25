@@ -9,7 +9,7 @@ use std::rc::Rc;
 use gl::types::{GLint, GLfloat};
 use std::cell::RefCell;
 use render::{Sprite, Engine};
-use physics::{accel, Direction, Forward, Backward, Still};
+use physics::{accel, rotate, Direction, Forward, Backward, Still, Rotation, Left, Right, Norot};
 
 pub struct Game {
     state: GameState,
@@ -27,11 +27,11 @@ pub struct Player {
     pub velocity: GLfloat,
     pub accel: GLfloat,
     pub accel_mod: int,
-    pub rotation_velocity: GLfloat,
-    pub rotation_accel: GLfloat,
+    pub rotation: GLfloat,
     pub points: int,
     pub sprite: Rc<RefCell<Sprite>>,
     pub dir: Direction,
+    pub rot: Rotation,
 }
 
 enum Selected {
@@ -62,12 +62,10 @@ impl Game {
         let p2s = Sprite::new(0.0, 0.0, 0.05, 0.05, 0.0, p2tex);
 
         let p1: Player = Player{number:1, position:-0.8, velocity:0.0, accel: 0.0, accel_mod:0,
-            rotation_velocity:0.0, rotation_accel:0.0, points:0, sprite: e.add_sprite(p1s),
-            dir:Still};
+            rotation: 0.0, points:0, sprite: e.add_sprite(p1s), dir:Still, rot:Norot};
 
         let p2: Player = Player{number:2, position:0.8, velocity:0.0, accel: 0.0, accel_mod:0,
-            rotation_velocity:0.0, rotation_accel:0.0, points:0, sprite: e.add_sprite(p2s),
-            dir:Still};
+            rotation: 0.0, points:0, sprite: e.add_sprite(p2s), dir:Still, rot:Norot};
 
         let hscores = e.load_texture("menu.highscore", "menu.highscore.png");
         let quit = e.load_texture("menu.quit", "menu.quit.png");
@@ -98,12 +96,24 @@ impl Game {
             glfw::KeyEvent(glfw::KeyS, _, glfw::Press, _) | glfw::KeyEvent(glfw::KeyS, _, glfw::Repeat, _) => {
                 self.p1.dir = Backward;
             },
+            glfw::KeyEvent(glfw::KeyA, _, glfw::Press, _) | glfw::KeyEvent(glfw::KeyA, _, glfw::Repeat, _) => {
+                self.p1.rot = Left;
+            },
+            glfw::KeyEvent(glfw::KeyD, _, glfw::Press, _) | glfw::KeyEvent(glfw::KeyD, _, glfw::Repeat, _) => {
+                self.p1.rot = Right;
+            },
             glfw::KeyEvent(glfw::KeyI, _, glfw::Press, _) | glfw::KeyEvent(glfw::KeyI, _, glfw::Repeat, _) => {
                 self.p2.dir = Forward;
             },
             glfw::KeyEvent(glfw::KeyK, _, glfw::Press, _) | glfw::KeyEvent(glfw::KeyK, _, glfw::Repeat, _) => {
                 self.p2.dir = Backward;
             },
+            glfw::KeyEvent(glfw::KeyJ, _, glfw::Press, _) | glfw::KeyEvent(glfw::KeyJ, _, glfw::Repeat, _) => {
+                self.p2.rot = Left;
+            },
+            glfw::KeyEvent(glfw::KeyL, _, glfw::Press, _) | glfw::KeyEvent(glfw::KeyL, _, glfw::Repeat, _) => {
+                self.p2.rot = Right;
+            }
             glfw::SizeEvent(x, y) => {
                 self.engine.width = x as GLfloat;
                 self.engine.height = y as GLfloat;
@@ -125,18 +135,23 @@ impl Game {
 
         accel(&mut self.p1);
         accel(&mut self.p2);
+        rotate(&mut self.p1);
+        rotate(&mut self.p2);
 
         if self.counter % 30 == 0 {
-            println!("accel: {} accel_mod: {}, velocity: {}, position: {} ", self.p1.accel, self.p1.accel_mod, self.p1.velocity, self.p1.position);
-            println!("accel: {} accel_mod: {}, velocity: {}, position: {} ", self.p2.accel, self.p2.accel_mod, self.p2.velocity, self.p2.position);
+            println!("accel: {} accel_mod: {}, velocity: {}, position: {} rot: {}", self.p1.accel, self.p1.accel_mod, self.p1.velocity, self.p1.position, self.p1.rotation);
+            println!("accel: {} accel_mod: {}, velocity: {}, position: {} rot: {}", self.p2.accel, self.p2.accel_mod, self.p2.velocity, self.p2.position, self.p2.rotation);
         }
 
         self.p1.dir = Still;
         self.p2.dir = Still;
+        self.p1.rot = Norot;
+        self.p2.rot = Norot;
 
         self.p1.sprite.borrow_mut().x = self.p1.position;
         self.p2.sprite.borrow_mut().x = self.p2.position;
-
+        self.p1.sprite.borrow_mut().rot = self.p1.rotation;
+        self.p2.sprite.borrow_mut().rot = self.p2.rotation;
         if physics::collide(&*self.p1.sprite.borrow(), &*self.p2.sprite.borrow()) {
             println!("Collision!")
         }

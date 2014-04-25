@@ -17,6 +17,23 @@ pub enum Direction {
     Still
 }
 
+#[deriving(Eq)]
+pub enum Rotation {
+    Left,
+    Right,
+    Norot
+}
+
+pub fn rotate(p: &mut game::Player){
+    use std::f32::consts::PI;
+    if p.rot == Left{
+        p.rotation += PI / 90.0;
+    }
+    if p.rot == Right{
+        p.rotation -= PI / 90.0;
+    }
+}
+
 pub fn accel(p: &mut game::Player){ //mut player:&mut player would allow to play w/ pointer
     if p.velocity >= -0.15 && p.velocity <= 0.15 {
         p.velocity += p.accel * 0.0001;

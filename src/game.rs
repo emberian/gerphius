@@ -122,6 +122,7 @@ impl Game {
             }
             _ => { }
         }
+
         accel(&mut self.p1);
         accel(&mut self.p2);
 

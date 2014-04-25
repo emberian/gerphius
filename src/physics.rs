@@ -17,24 +17,30 @@ pub enum Direction {
     Still
 }
 
-pub fn accel(p:&mut game::Player){ //mut player:&mut player would allow to play w/ pointer
-    if p.velocity >= -0.15 && p.velocity <= 0.15{
+pub fn accel(p: &mut game::Player){ //mut player:&mut player would allow to play w/ pointer
+    if p.velocity >= -0.15 && p.velocity <= 0.15 {
         p.velocity += p.accel * 0.0001;
     }
-    if p.velocity < -0.05{
+
+    if p.velocity < -0.05 {
         p.velocity = -0.05;
     }
-    if p.velocity >= 0.05{
+
+    if p.velocity >= 0.05 {
         p.velocity = 0.05
     }
+
     p.position += p.velocity;
+
     let (acc, amod) = accel_compute(p.dir, p.accel, p.accel_mod);
+
     p.accel = acc;
     p.accel_mod = amod;
 }
 
 
-pub fn accel_compute (dir: Direction, mut accel:f32, mut accel_mod:int) -> (f32, int) {//this will use accel/accel_mod to compute the rate of increase of acceleration.
+pub fn accel_compute (dir: Direction, mut accel: f32, mut accel_mod: int) -> (f32, int) {
+    //this will use accel/accel_mod to compute the rate of increase of acceleration.
     if dir == Forward {
         let bounds = [
             (-85, -75, 25),
@@ -63,8 +69,7 @@ pub fn accel_compute (dir: Direction, mut accel:f32, mut accel_mod:int) -> (f32,
             }
         }
 
-    }
-    else if dir == Backward {
+    } else if dir == Backward {
         let bounds = [
             (-85, -75, -2),
             (-75, -60, -5),
@@ -93,8 +98,10 @@ pub fn accel_compute (dir: Direction, mut accel:f32, mut accel_mod:int) -> (f32,
         }
     }
 
-    if accel <= 0.05 && accel >= -0.05{
+    if accel <= 0.05 && accel >= -0.05 {
         accel = accel + (0.00003 * (accel_mod as f32));
+    } else {
+        accel = accel.signum() * 0.05;
     }
 
     (accel, accel_mod) //returns accel and accel mod

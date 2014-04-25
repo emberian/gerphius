@@ -7,12 +7,14 @@ extern crate log;
 extern crate libc;
 extern crate native;
 extern crate collections;
+
 extern crate gl;
 extern crate hgl;
 extern crate png;
 extern crate glfw;
 extern crate ears;
 extern crate noise;
+extern crate cgmath;
 
 use game::Game;
 use glfw::Context;
@@ -28,12 +30,6 @@ macro_rules! debug_assert (
 mod game;
 mod render;
 mod physics;
-
-#[start]
-fn start(argc: int, argv: **u8) -> int {
-    // a little stub to start on the main thread, which glfw needs
-    native::start(argc, argv, main)
-}
 
 fn main() {
     let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
